@@ -1,0 +1,183 @@
+!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scheda Andrea e Tiziano</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#eef1f5;--card:#fff;--ink:#14213d;--mute:#667085;--line:#d9dee7;--a:#1f5eff;--t:#c2410c;--acc:var(--a);--chip:#f4f6f9;--red:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1420;--card:#182033;--ink:#eaeef7;--mute:#94a0b8;--line:#2a3550;--a:#6c94ff;--t:#ff9a63;--chip:#212b45;--red:#ff7b6b}}
+:root[data-theme="dark"]{--bg:#0f1420;--card:#182033;--ink:#eaeef7;--mute:#94a0b8;--line:#2a3550;--a:#6c94ff;--t:#ff9a63;--chip:#212b45;--red:#ff7b6b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Barlow,system-ui,sans-serif;font-size:16px}
+main{max-width:560px;margin:0 auto;padding:14px 12px 40px}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;margin:6px 4px 12px}
+.seg{display:flex;background:var(--chip);border-radius:12px;padding:4px;gap:4px;margin-bottom:10px}
+.seg button{flex:1;border:0;background:transparent;color:var(--mute);font:600 16px Barlow,sans-serif;padding:10px 4px;border-radius:9px;cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.who button.on{background:var(--acc);color:#fff}
+.card{background:var(--card);border-radius:14px;padding:12px;margin-bottom:10px;border-left:5px solid var(--acc)}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.card h2{font-family:'Barlow Condensed',sans-serif;font-size:21px;margin:0 0 2px;font-weight:600}
+.note{font-size:13px;color:var(--mute);margin:0 0 6px}
+.set{display:grid;grid-template-columns:20px 1fr 1fr 34px;gap:6px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+.set.bw{grid-template-columns:20px 1fr 34px}
+.set .n{font-size:13px;color:var(--mute);font-weight:600}
+.st{display:flex;align-items:center;background:var(--chip);border-radius:10px;overflow:hidden}
+.st button{width:34px;height:40px;border:0;background:transparent;color:var(--acc);font:600 22px Barlow,sans-serif;cursor:pointer}
+.st button:active{background:var(--line)}
+.st label{flex:1;text-align:center;min-width:0}
+.st input{width:100%;border:0;background:transparent;color:var(--ink);font:600 17px Barlow,sans-serif;text-align:center;padding:0;-moz-appearance:textfield}
+.st input::-webkit-outer-spin-button,.st input::-webkit-inner-spin-button{-webkit-appearance:none}
+.st small{display:block;font-size:11px;color:var(--mute);line-height:1;margin-top:-2px}
+.x{border:0;background:transparent;color:var(--red);font:600 18px Barlow,sans-serif;height:40px;cursor:pointer;border-radius:8px}
+.x:active{background:var(--chip)}
+.add{margin-top:6px;border:1px dashed var(--line);background:transparent;color:var(--mute);font:500 14px Barlow,sans-serif;padding:9px;border-radius:9px;width:100%;cursor:pointer}
+.new{background:var(--card);border-radius:14px;padding:12px;margin-bottom:10px}
+.new h3{margin:0 0 8px;font:600 18px 'Barlow Condensed',sans-serif}
+.new input[type=text]{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--chip);color:var(--ink);font:500 16px Barlow,sans-serif;margin-bottom:8px}
+.new label{display:flex;gap:8px;align-items:center;font-size:14px;margin-bottom:8px}
+.new .go{width:100%;border:0;background:var(--acc);color:#fff;font:600 16px Barlow,sans-serif;padding:11px;border-radius:9px;cursor:pointer}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px;font-size:13px;color:var(--mute)}
+.foot button{border:1px solid var(--line);background:transparent;color:var(--mute);border-radius:9px;padding:8px 12px;font:500 13px Barlow,sans-serif;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+</style>
+</head>
+<body>
+<main>
+<h1>Scheda Andrea e Tiziano</h1>
+<div class="seg who" id="who"></div>
+<div class="seg" id="days"></div>
+<div id="list"></div>
+<div id="newbox"></div>
+<div class="foot"><span id="msg">Salvataggio in corso…</span><span><button id="dl" hidden>Scarica scheda</button> <button id="reset">Ripristina</button></span></div>
+</main>
+<script>
+window.onerror=function(m,u,l){var e=document.getElementById("list");if(e)e.insertAdjacentHTML("afterbegin","<p style=\"color:#c00\">Errore: "+m+" (riga "+l+")</p>")};
+function mk(name,reps,a,t,o){o=o||{};
+ function f(w){return reps.map(function(r,i){return {r:r,w:Array.isArray(w)?w[i]:(w===undefined?null:w)}})}
+ return {name:name,note:o.note||'',bw:!!o.bw,A:f(a),T:f(t===undefined?a:t)}}
+function rp(n,r){return Array(n).fill(r)}
+var DAYS=[
+{title:'Giorno 1',ex:[
+ mk('Trazioni',[10,7,7],null,null,{bw:true,note:'A corpo libero. Tiziano parte da 9, 6, 7.'}),
+ mk('Spinte su panca piana con manubri',[12,12,10,8],[23.5,23.5,25,27.5],[12.5,12.5,15,17.5]),
+ mk('Panca inclinata 30°',[8,8,6],[22.5,22.5,25]),
+ mk('Chest fly',rp(3,15),35,40),
+ mk('Lever chest press',rp(3,8),[22.5,25,25],[27.5,30,30]),
+ mk('Pulley',[12,12,10,8],[36,36,40,44]),
+ mk('Lat machine',rp(4,8),52,56)]},
+{title:'Giorno 2',ex:[
+ mk('Curl appoggiato hammer',rp(3,8),14,12),
+ mk('Curl bilanciere su panca 60°',[null,null,null],[36,36,36],[32,32,32],{note:'Ripetizioni non indicate.'}),
+ mk('Curl su panca 45°',rp(3,10),8),
+ mk('Spider curl 45°',rp(3,12),3,3.5),
+ mk('Tirate cavi in basso, polsino singolo',[12,10,8,6],[15,20,22,24],[15,20,25,28]),
+ mk('Overhead extension singolo',rp(3,15),8),
+ mk('Dip',rp(3,8),null,null,{bw:true}),
+ mk('Spinte su panca macchinario',rp(4,12),10,25),
+ mk('Panca macchinario nuovo',[null,null,null],10,10,{note:'Ripetizioni non indicate.'}),
+ mk('Alzate laterali',rp(4,15),8),
+ mk('Deltoide posteriore',rp(4,15),25),
+ mk('Flessioni',[20,15],null,null,{bw:true,note:'Obiettivo: 25 ripetizioni per entrambi.'})]},
+{title:'Giorno 3',ex:[
+ mk('Belt',rp(5,12),20),
+ mk('Hack squat',[12,10,8,6],25),
+ mk('Leg extension',[12,12],null,null,{note:'Più drop set finale. Peso non indicato.'}),
+ mk('Leg curl',rp(4,15),26,26,{note:'1 secondo fermo.'})]}
+];
+var KEY='scheda-andrea-tiziano-v1',state={who:'A',day:0,data:null,t:0,db:null,confirmReset:false};
+function ser(){return JSON.stringify(state.data,function(k,v){return k==='_c'?undefined:v})}
+function fresh(){return JSON.parse(JSON.stringify(DAYS))}
+try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&p.d&&p.d.length===DAYS.length){state.data=p.d;state.t=p.t||0}}}catch(e){}
+if(!state.data&&window.__INIT)state.data=window.__INIT;
+if(!state.data)state.data=fresh();
+var timer=null;
+function $(id){return document.getElementById(id)}
+function say(t){$('msg').textContent=t}
+function save(){
+ state.t=Date.now();
+ try{localStorage.setItem(KEY,JSON.stringify({d:JSON.parse(ser()),t:state.t}))}catch(e){}
+ if(!state.db){say('Salvato su questo dispositivo');return}
+ say('Salvataggio…');clearTimeout(timer);
+ timer=setTimeout(function(){
+  state.db.doc('scheda/stato').set({json:ser(),t:state.t}).then(function(){say('Salvato')}).catch(function(){say('Salvato su questo dispositivo')})},500)}
+function fmt(v){return v===null||v===undefined?'':String(Math.round(v*100)/100)}
+function wstep(){return 0.25}
+function seg(el,items,cur,fn){el.innerHTML='';items.forEach(function(it,i){var b=document.createElement('button');b.textContent=it;if(i===cur)b.className='on';b.onclick=function(){fn(i)};el.appendChild(b)})}
+function stepper(val,unit,onInc,onDec,onSet){
+ var d=document.createElement('div');d.className='st';
+ var m=document.createElement('button');m.textContent='−';m.setAttribute('aria-label','Diminuisci '+unit);
+ var p=document.createElement('button');p.textContent='+';p.setAttribute('aria-label','Aumenta '+unit);
+ var l=document.createElement('label'),i=document.createElement('input');i.type='number';i.inputMode='decimal';i.step='any';i.min='0';i.value=fmt(val);i.placeholder='—';i.setAttribute('aria-label',unit);
+ var sm=document.createElement('small');sm.textContent=unit;l.appendChild(i);l.appendChild(sm);
+ m.onclick=onDec;p.onclick=onInc;i.onchange=function(){onSet(i.value===''?null:parseFloat(i.value))};
+ d.appendChild(m);d.appendChild(l);d.appendChild(p);return d}
+function btn(cls,txt,fn,label){var b=document.createElement('button');b.className=cls;b.textContent=txt;b.onclick=fn;if(label)b.setAttribute('aria-label',label);return b}
+function render(){
+ seg($('who'),['Andrea','Tiziano'],state.who==='A'?0:1,function(i){state.who=i?'T':'A';render()});
+ document.documentElement.style.setProperty('--acc',state.who==='A'?'var(--a)':'var(--t)');
+ seg($('days'),state.data.map(function(d,i){return d.title||DAYS[i].title}),state.day,function(i){state.day=i;render()});
+ var list=$('list');list.innerHTML='';
+ var exs=state.data[state.day].ex;
+ exs.forEach(function(ex,ei){
+  var sets=ex[state.who],c=document.createElement('section');c.className='card';
+  var hd=document.createElement('div');hd.className='head';
+  var h=document.createElement('h2');h.textContent=ex.name;hd.appendChild(h);
+  hd.appendChild(btn('x','Elimina esercizio',function(){if(ex._c){exs.splice(ei,1);save();render()}else{ex._c=1;this.textContent='Conferma';this.style.fontSize='13px';var s=this;setTimeout(function(){ex._c=0;s.textContent='Elimina esercizio'},3000)}},'Elimina esercizio'));
+  hd.lastChild.textContent='Elimina esercizio';hd.lastChild.style.fontSize='13px';
+  c.appendChild(hd);
+  if(ex.note){var n=document.createElement('p');n.className='note';n.textContent=ex.note;c.appendChild(n)}
+  sets.forEach(function(s,idx){
+   var row=document.createElement('div');row.className='set'+(ex.bw?' bw':'');
+   var no=document.createElement('span');no.className='n';no.textContent=idx+1;row.appendChild(no);
+   row.appendChild(stepper(s.r,'rip.',
+    function(){s.r=(s.r||0)+1;save();render()},
+    function(){s.r=Math.max(0,(s.r||0)-1);save();render()},
+    function(v){s.r=v;save();render()}));
+   if(!ex.bw)row.appendChild(stepper(s.w,'kg',
+    function(){s.w=Math.round(((s.w||0)+wstep())*100)/100;save();render()},
+    function(){s.w=Math.max(0,Math.round(((s.w||0)-wstep())*100)/100);save();render()},
+    function(v){s.w=v;save();render()}));
+   row.appendChild(btn('x','✕',function(){sets.splice(idx,1);save();render()},'Rimuovi serie '+(idx+1)));
+   c.appendChild(row)});
+  c.appendChild(btn('add','Aggiungi serie',function(){var l=sets[sets.length-1]||{r:null,w:null};sets.push({r:l.r,w:l.w});save();render()}));
+  list.appendChild(c)});
+ var nb=$('newbox');nb.innerHTML='';
+ var box=document.createElement('div');box.className='new';
+ box.innerHTML='<h3>Aggiungi esercizio</h3><input type="text" id="nn" placeholder="Nome esercizio" maxlength="60"><label><input type="checkbox" id="nbw"> A corpo libero (senza peso)</label>';
+ box.appendChild(btn('go','Aggiungi esercizio',function(){
+  var name=$('nn').value.trim();if(!name){$('nn').focus();return}
+  var bw=$('nbw').checked;
+  exs.push(mk(name,rp(3,10),bw?null:0,bw?null:0,{bw:bw}));save();render();window.scrollTo(0,document.body.scrollHeight)}));
+ nb.appendChild(box)}
+$('reset').onclick=function(){
+ if(!state.confirmReset){state.confirmReset=true;this.textContent='Tocca ancora per confermare';var b=this;setTimeout(function(){state.confirmReset=false;b.textContent='Ripristina'},3000);return}
+ state.confirmReset=false;this.textContent='Ripristina';state.data=fresh();save();render()};
+function pageHtml(){var h=document.documentElement.outerHTML,c='</'+'script>';
+ h=h.replace(/<script id="init">[\s\S]*?<\/script>/,'');
+ var tag='<script id="init">window.__INIT='+ser().replace(/</g,'\\u003c')+';'+c;
+ return '<!DOCTYPE html>'+h.replace('<script>',tag+'<script>')}
+render();say('Salvato su questo dispositivo');
+try{
+ var q=(window.claude&&typeof claude.use==='function')?claude.use('downloads'):null;
+ Promise.resolve(q).then(function(d){
+  if(!d||typeof d.save!=='function')return;
+  var b=$('dl');b.hidden=false;
+  b.onclick=function(){d.save({filename:'scheda-andrea-tiziano.html',data:pageHtml()}).then(function(){say('Scheda scaricata')}).catch(function(e){if(e&&e.code!=='declined')say('Download non disponibile')})}
+ }).catch(function(){});
+ Promise.resolve((window.claude&&typeof claude.use==='function')?claude.use('db'):null).then(function(db){
+  if(!db||typeof db.doc!=='function')return;
+  db.doc('scheda/stato').get().then(function(snap){
+   state.db=db;
+   if(snap.exists){var v=snap.data();if(v&&v.json&&(v.t||0)>=state.t){try{var dd=JSON.parse(v.json);if(dd&&dd.length===DAYS.length){state.data=dd;state.t=v.t;render()}}catch(e){}}}
+   else save();
+   say('Salvato')}).catch(function(){})
+ }).catch(function(){});
+}catch(err){}
+</script>
+</body>
+</html>
